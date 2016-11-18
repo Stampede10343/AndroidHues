@@ -9,8 +9,11 @@ interface ConnectContract
 {
     interface View
     {
-        fun showConnectDialog()
-        fun displayAccessPoints(accessPoints: MutableList<PHAccessPoint>?)
+        fun showFindAPDialog()
+        fun dismissAPDialog()
+        fun displayAccessPoints(accessPoints: MutableList<PHAccessPoint>)
+        fun showAuthenticationDialog(accessPoint: PHAccessPoint?)
+        fun showNoAccessPointsFound()
     }
 
     interface Presenter : com.dev.cameronc.hues.Base.Presenter<View>

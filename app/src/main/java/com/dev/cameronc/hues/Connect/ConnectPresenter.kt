@@ -14,21 +14,42 @@ import javax.inject.Inject
 class ConnectPresenter : ConnectContract.Presenter, PHSDKListener
 {
     @Inject
-    val hueSDK: PHHueSDK? = null
+    lateinit var hueSDK: PHHueSDK
+    var view: ConnectContract.View? = null
+
+    override fun onViewAttached(view: ConnectContract.View)
+    {
+        this.view = view
+        view.showFindAPDialog()
+
+        hueSDK.notificationManager?.registerSDKListener(this)
+        val searchManager = hueSDK.getSDKService(PHHueSDK.SEARCH_BRIDGE) as PHBridgeSearchManager
+        searchManager.search(true, true)
+    }
 
     override fun onAccessPointsFound(accessPoints: MutableList<PHAccessPoint>?)
     {
-        view?.displayAccessPoints(accessPoints)
+        view?.dismissAPDialog()
+
+        if (accessPoints != null)
+        {
+            view?.displayAccessPoints(accessPoints)
+        }
+        else
+        {
+            view?.showNoAccessPointsFound()
+        }
     }
 
-    override fun onAuthenticationRequired(p0: PHAccessPoint?)
+    override fun onAuthenticationRequired(accessPoint: PHAccessPoint?)
     {
+        view?.showAuthenticationDialog(accessPoint)
     }
 
     override fun onBridgeConnected(phBridge: PHBridge?, p1: String?)
     {
-        hueSDK?.selectedBridge = phBridge
-        hueSDK?.enableHeartbeat(phBridge, PHHueSDK.HB_INTERVAL.toLong())
+        hueSDK.selectedBridge = phBridge
+        hueSDK.enableHeartbeat(phBridge, PHHueSDK.HB_INTERVAL.toLong())
     }
 
     override fun onCacheUpdated(p0: MutableList<Int>?, p1: PHBridge?)
@@ -51,19 +72,6 @@ class ConnectPresenter : ConnectContract.Presenter, PHSDKListener
     {
     }
 
-    override var view: ConnectContract.View? = null
-        get() = view
-
-    override fun onViewAttached(view: ConnectContract.View)
-    {
-        this.view = view
-        view.showConnectDialog()
-
-        hueSDK?.notificationManager?.registerSDKListener(this)
-        val searchManager = hueSDK?.getSDKService(PHHueSDK.SEARCH_BRIDGE) as PHBridgeSearchManager
-        searchManager.search(true, true)
-    }
-
     override fun onViewDetached()
     {
         view = null
@@ -71,6 +79,6 @@ class ConnectPresenter : ConnectContract.Presenter, PHSDKListener
 
     override fun onAccessPointClicked(accessPoint: PHAccessPoint)
     {
-        hueSDK?.connect(accessPoint)
+        hueSDK.connect(accessPoint)
     }
 }

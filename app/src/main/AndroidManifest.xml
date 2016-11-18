@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".Connect$ConnectActivity"/>
+        <activity android:name=".Connect.ConnectActivity"/>
     </application>
 
 </manifest>

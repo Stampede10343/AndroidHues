@@ -6,7 +6,6 @@ package com.dev.cameronc.hues.Base
 
 interface Presenter<V>
 {
-    var view: V?
     fun onViewAttached(view: V)
     fun onViewDetached()
 }
