@@ -1,7 +1,5 @@
 package com.dev.cameronc.hues.Dagger
 
-import com.dev.cameronc.hues.Base.BaseActivity
-import com.dev.cameronc.hues.Connect.ConnectPresenter
 import dagger.Component
 import javax.inject.Singleton
 
@@ -13,6 +11,6 @@ import javax.inject.Singleton
 @Component(modules = arrayOf(AndroidModule::class, HueModule::class))
 interface ApplicationComponent
 {
-    fun inject(activity: BaseActivity)
-    fun inject(presenter: ConnectPresenter)
+    //fun inject(activity: BaseActivity)
+    fun plus(connectModule: ConnectModule): ConnectComponent
 }

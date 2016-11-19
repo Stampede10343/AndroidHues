@@ -5,25 +5,36 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.dev.cameronc.hues.Base.BaseActivity
+import com.dev.cameronc.hues.Dagger.ConnectModule
+import com.dev.cameronc.hues.Model.AccessPoint
 import com.dev.cameronc.hues.R
 import com.philips.lighting.hue.sdk.PHAccessPoint
+import java.util.*
+import javax.inject.Inject
 
 /**
  * Created by ccord on 11/16/2016.
  */
 class ConnectActivity : BaseActivity(), ConnectContract.View
 {
-    var connectProgressDialog: ProgressDialog? = null
-    var presenter: ConnectContract.Presenter? = null
+    @Inject lateinit var presenter: ConnectPresenter
+
+    private var connectProgressDialog: ProgressDialog? = null
+    private var accessPointsDialog: AccessPointDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.connect_dialog_view)
 
-        presenter = ConnectPresenter()
-        app.getApplicationComponent().inject(presenter as ConnectPresenter)
-        presenter?.onViewAttached(this)
+        app.getApplicationComponent().plus(ConnectModule()).inject(this)
+        presenter.onViewAttached(this)
+    }
+
+    override fun onStop()
+    {
+        super.onStop()
+        presenter.onViewDetached()
     }
 
     override fun showFindAPDialog()
@@ -44,6 +55,11 @@ class ConnectActivity : BaseActivity(), ConnectContract.View
     {
         val apNames: List<String> = accessPoints.map { ap -> ap.ipAddress }
         Log.i(javaClass.name, apNames.toString())
+
+        val apList = accessPoints.map(::AccessPoint)
+
+        accessPointsDialog = AccessPointDialog.newInstance(apList as ArrayList<AccessPoint>)
+        accessPointsDialog!!.show(supportFragmentManager, "ApDialog")
     }
 
     override fun showAuthenticationDialog(accessPoint: PHAccessPoint?)
