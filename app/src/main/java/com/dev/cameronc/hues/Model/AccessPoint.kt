@@ -9,9 +9,9 @@ import com.philips.lighting.hue.sdk.PHAccessPoint
  */
 data class AccessPoint(val hueAp: PHAccessPoint) : Parcelable
 {
-    var ipAddress: String
-    var macAddress: String
-    var bridgeId: String
+    var ipAddress: String?
+    var macAddress: String?
+    var bridgeId: String?
     var username: String?
 
     init

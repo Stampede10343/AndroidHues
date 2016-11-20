@@ -21,6 +21,7 @@ internal class AccessPointDialog() : DialogFragment()
 {
     private lateinit var accessPointList: RecyclerView
     private var accessPoints: MutableList<AccessPoint>? = null
+    var apInteractor: AccessPointDialogInterator? = null
 
     init
     {
@@ -34,7 +35,7 @@ internal class AccessPointDialog() : DialogFragment()
         accessPoints = arguments.getParcelableArrayList<AccessPoint>("APs")
 
         accessPointList = view.findViewById(R.id.access_point_recyclerview) as RecyclerView
-        accessPointList.adapter = APRecyclerViewAdapter(accessPoints!!)
+        accessPointList.adapter = APRecyclerViewAdapter(accessPoints!!, apInteractor)
         accessPointList.layoutManager = LinearLayoutManager(view!!.context)
 
         return view
@@ -55,7 +56,7 @@ internal class AccessPointDialog() : DialogFragment()
 
     }
 
-    class APRecyclerViewAdapter(val accessPoints: MutableList<AccessPoint>) : RecyclerView.Adapter<ApViewHolder>()
+    class APRecyclerViewAdapter(val accessPoints: MutableList<AccessPoint>, val apInteractor: AccessPointDialogInterator?) : RecyclerView.Adapter<ApViewHolder>()
     {
 
         override fun getItemCount(): Int
@@ -70,11 +71,13 @@ internal class AccessPointDialog() : DialogFragment()
             holder!!.icon.setImageResource(R.mipmap.ic_launcher)
             holder.ipAddress.text = ap.ipAddress
             holder.macAddress.text = ap.macAddress
+
+            holder.itemView.setOnClickListener { apInteractor?.onApClicked(ap) }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ApViewHolder
         {
-            val view = LayoutInflater.from(parent!!.context).inflate(R.layout.ap_item, parent, false);
+            val view = LayoutInflater.from(parent!!.context).inflate(R.layout.ap_item, parent, false)
 
             return ApViewHolder(view)
         }
@@ -93,6 +96,11 @@ internal class AccessPointDialog() : DialogFragment()
             macAddress = view.findViewById(R.id.ap_item_mac_address) as TextView
         }
 
+    }
+
+    interface AccessPointDialogInterator
+    {
+        fun onApClicked(accessPoint: AccessPoint)
     }
 
 }

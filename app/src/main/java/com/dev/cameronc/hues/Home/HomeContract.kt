@@ -8,9 +8,11 @@ interface HomeContract
 {
     interface View
     {
-        fun showBridges(bridges: String)
+        fun navigateToConnectScreen()
     }
 
-    interface Presenter<V> : com.dev.cameronc.hues.Base.Presenter<View>
-    {}
+    interface Presenter : com.dev.cameronc.hues.Base.Presenter<View>
+    {
+        fun onPresenterDestroyed()
+    }
 }

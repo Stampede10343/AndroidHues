@@ -1,5 +1,6 @@
 package com.dev.cameronc.hues.Connect
 
+import com.dev.cameronc.hues.Model.AccessPoint
 import com.philips.lighting.hue.sdk.PHAccessPoint
 
 /**
@@ -10,14 +11,17 @@ interface ConnectContract
     interface View
     {
         fun showFindAPDialog()
-        fun dismissAPDialog()
+        fun dismissFindApDialog()
         fun displayAccessPoints(accessPoints: MutableList<PHAccessPoint>)
-        fun showAuthenticationDialog(accessPoint: PHAccessPoint?)
+        fun dismissAccessPointSelectionDialog()
+        fun showAuthenticationScreen()
         fun showNoAccessPointsFound()
+        fun showHomeScreen()
     }
 
     interface Presenter : com.dev.cameronc.hues.Base.Presenter<View>
     {
-        fun onAccessPointClicked(accessPoint: PHAccessPoint)
+        fun onApClicked(accessPoint: AccessPoint)
+        fun onPresenterDestroyed()
     }
 }

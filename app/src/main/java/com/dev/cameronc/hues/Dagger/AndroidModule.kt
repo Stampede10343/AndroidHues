@@ -1,7 +1,8 @@
 package com.dev.cameronc.hues.Dagger
 
 import android.content.Context
-import android.content.SharedPreferences
+import com.dev.cameronc.hues.AndroidSharedPrefs
+import com.dev.cameronc.hues.SharedPrefs
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -29,8 +30,8 @@ class AndroidModule(context: Context)
 
     @Provides
     @Singleton
-    fun sharedPreferences(context: Context): SharedPreferences
+    fun sharedPreferences(context: Context): SharedPrefs
     {
-        return context.getSharedPreferences("HuesApplication", Context.MODE_PRIVATE)
+        return AndroidSharedPrefs(context.getSharedPreferences("HuesApplication", Context.MODE_PRIVATE))
     }
 }

@@ -1,5 +1,6 @@
 package com.dev.cameronc.hues.Dagger
 
+import android.os.Build
 import com.philips.lighting.hue.sdk.PHHueSDK
 import dagger.Module
 import dagger.Provides
@@ -16,6 +17,10 @@ class HueModule
     @Singleton
     fun provideHueSdk(): PHHueSDK
     {
-        return PHHueSDK.create()
+        val hueSdk = PHHueSDK.create()
+        hueSdk.deviceName = Build.MODEL
+        hueSdk.appName = "Hues"
+
+        return hueSdk
     }
 }
