@@ -64,7 +64,7 @@ class ConnectPresenter(val hueSdk: PHHueSDK, val sharedPrefs: SharedPrefs) : Con
     override fun onAccessPointsFound(accessPoints: MutableList<PHAccessPoint>?)
     {
         view?.dismissFindApDialog()
-        if (accessPoints != null)
+        if (accessPoints != null && accessPoints.isNotEmpty())
         {
             this.accessPoints.clear()
             this.accessPoints.addAll(accessPoints.map(::AccessPoint))
@@ -81,7 +81,7 @@ class ConnectPresenter(val hueSdk: PHHueSDK, val sharedPrefs: SharedPrefs) : Con
         findingAps = false
     }
 
-    override fun onAuthenticationRequired(accessPoint: PHAccessPoint?)
+    override fun onAuthenticationRequired(accessPoint: PHAccessPoint)
     {
         view?.dismissAccessPointSelectionDialog()
 

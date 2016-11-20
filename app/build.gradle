@@ -46,6 +46,9 @@ dependencies {
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    //Mockito
+    testCompile 'org.mockito:mockito-core:1.10.19'
 }
 repositories {
     mavenCentral()
