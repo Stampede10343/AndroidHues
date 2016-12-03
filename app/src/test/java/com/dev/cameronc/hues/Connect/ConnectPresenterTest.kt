@@ -1,7 +1,7 @@
 package com.dev.cameronc.hues.Connect
 
 import com.dev.cameronc.hues.Model.AccessPoint
-import com.dev.cameronc.hues.SharedPrefs
+import com.dev.cameronc.hues.Preferences.SharedPrefs
 import com.philips.lighting.hue.sdk.PHAccessPoint
 import com.philips.lighting.hue.sdk.PHBridgeSearchManager
 import com.philips.lighting.hue.sdk.PHHueSDK

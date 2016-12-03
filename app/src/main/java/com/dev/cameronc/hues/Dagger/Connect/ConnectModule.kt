@@ -2,7 +2,7 @@ package com.dev.cameronc.hues.Dagger.Connect
 
 import com.dev.cameronc.hues.Connect.ConnectContract
 import com.dev.cameronc.hues.Connect.ConnectPresenter
-import com.dev.cameronc.hues.SharedPrefs
+import com.dev.cameronc.hues.Preferences.SharedPrefs
 import com.philips.lighting.hue.sdk.PHHueSDK
 import dagger.Module
 import dagger.Provides

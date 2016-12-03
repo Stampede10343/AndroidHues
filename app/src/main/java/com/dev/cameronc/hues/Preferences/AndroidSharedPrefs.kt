@@ -1,4 +1,4 @@
-package com.dev.cameronc.hues
+package com.dev.cameronc.hues.Preferences
 
 import android.content.SharedPreferences
 

@@ -1,8 +1,8 @@
 package com.dev.cameronc.hues.Dagger
 
 import android.content.Context
-import com.dev.cameronc.hues.AndroidSharedPrefs
-import com.dev.cameronc.hues.SharedPrefs
+import com.dev.cameronc.hues.Preferences.AndroidSharedPrefs
+import com.dev.cameronc.hues.Preferences.SharedPrefs
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

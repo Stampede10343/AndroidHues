@@ -1,4 +1,4 @@
-package com.dev.cameronc.hues
+package com.dev.cameronc.hues.Preferences
 
 /**
  * Created by ccord on 11/19/2016.
