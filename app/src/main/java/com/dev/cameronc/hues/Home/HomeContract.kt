@@ -12,13 +12,14 @@ interface HomeContract
     {
         fun navigateToConnectScreen()
         fun notifyBridgeConnected()
-        fun showLightGroups(allGroups: List<PHGroup>)
+        fun showLightGroups(allGroups: List<HueGroupInfo>)
         fun showNoLightGroups()
     }
 
     interface Presenter : com.dev.cameronc.hues.Base.Presenter<View>
     {
         fun onPresenterDestroyed()
-        fun onSliderChanged(group: GroupUpdateEvent)
+        fun onSliderChanged(event: GroupUpdateEvent)
+        fun onGroupOnToggled(phGroup: PHGroup, on: Boolean)
     }
 }

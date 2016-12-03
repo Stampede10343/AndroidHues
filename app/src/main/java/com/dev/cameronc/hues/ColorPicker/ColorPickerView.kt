@@ -1,5 +1,8 @@
 package com.dev.cameronc.hues.ColorPicker
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color.*
@@ -10,6 +13,7 @@ import android.support.annotation.StyleRes
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import com.dev.cameronc.hues.dpToPx
 import java.util.*
 
@@ -106,9 +110,12 @@ class ColorPickerView : View
         else
         {
             drawSliderBarRect(canvas, sliderBarCenterX - sliderBarWidth / 2f, sliderBarCenterX + sliderBarWidth / 2f)
-            notifySliderChangeListeners(((sliderBarCenterX / width.toFloat()) * 100).toInt())
+            notifySliderChangeListeners(sliderRelativePosition())
         }
     }
+
+    private fun sliderRelativePosition()
+            = ((sliderBarCenterX / width.toFloat()) * 100).toInt()
 
     private fun sliderBarOffEndScreen()
             = sliderBarCenterX + sliderBarWidth / 2 > width
@@ -187,6 +194,39 @@ class ColorPickerView : View
         {
             changeListener.invoke(value)
         }
+    }
+
+    /**
+     * Set the slider to some position and notify listeners
+     *
+     * @param position The position from 0 - 1 relative
+     */
+    fun setSliderPosition(@FloatRange(from = 0.0, to = 1.0) position: Float)
+    {
+        if (width == 0)
+        {
+            return
+        }
+
+        val newPosition = (width * position).toInt()
+        val animator: ValueAnimator = ValueAnimator.ofInt(sliderBarCenterX, newPosition)
+        animator.apply {
+            interpolator = DecelerateInterpolator()
+            duration = 300
+            addUpdateListener { anim ->
+                sliderBarCenterX = anim.animatedValue as Int
+                invalidate()
+            }
+            addListener(object : AnimatorListenerAdapter()
+            {
+                override fun onAnimationEnd(animation: Animator?)
+                {
+                    notifySliderChangeListeners(sliderRelativePosition())
+                }
+            })
+        }
+        animator.start()
+
     }
 }
 

@@ -1,16 +1,11 @@
 package com.dev.cameronc.hues.Home
 
-import com.dev.cameronc.hues.ColorPicker.ColorPickerListener
 import com.dev.cameronc.hues.Preferences.PreferenceKeys
 import com.dev.cameronc.hues.Preferences.SharedPrefs
 import com.philips.lighting.hue.sdk.PHAccessPoint
 import com.philips.lighting.hue.sdk.PHHueSDK
 import com.philips.lighting.hue.sdk.PHSDKListener
-import com.philips.lighting.model.PHBridge
-import com.philips.lighting.model.PHHueParsingError
-import com.philips.lighting.model.PHLight
-import com.philips.lighting.model.PHLightState
-import io.reactivex.Observable
+import com.philips.lighting.model.*
 
 /**
  * Created by ccord on 11/9/2016.
@@ -25,7 +20,6 @@ class HomePresenter(private val hueSDK: PHHueSDK, private val sharedPrefs: Share
 
     var view: HomeContract.View? = null
     var connected = false
-    var lightObservable: Observable<Int>? = null
 
     override fun onViewAttached(view: HomeContract.View)
     {
@@ -33,19 +27,12 @@ class HomePresenter(private val hueSDK: PHHueSDK, private val sharedPrefs: Share
 
         if (connected)
         {
-            view.showLightGroups(hueSDK.selectedBridge.resourceCache.allGroups)
+            view.showLightGroups(getAllGroupsWithLightStatus(hueSDK.selectedBridge))
         }
         else
         {
             tryConnectToLastAP(view)
         }
-
-        lightObservable = getSliderChangedObservable(object : ColorPickerListener
-        {
-            override fun onSliderPercentChanged(percent: Int)
-            {
-            }
-        })
     }
 
     private fun tryConnectToLastAP(view: HomeContract.View)
@@ -65,7 +52,8 @@ class HomePresenter(private val hueSDK: PHHueSDK, private val sharedPrefs: Share
             connected = true
             if (hueSDK.selectedBridge.resourceCache.allGroups.size > 0)
             {
-                view.showLightGroups(hueSDK.selectedBridge.resourceCache.allGroups)
+                val groupLights: List<HueGroupInfo> = getAllGroupsWithLightStatus(hueSDK.selectedBridge)
+                view.showLightGroups(groupLights)
             }
             else
             {
@@ -76,22 +64,6 @@ class HomePresenter(private val hueSDK: PHHueSDK, private val sharedPrefs: Share
         {
             hueSDK.notificationManager.unregisterSDKListener(this)
             view.navigateToConnectScreen()
-        }
-    }
-
-    private fun getSliderChangedObservable(listener: ColorPickerListener): Observable<Int>
-    {
-        return Observable.create<Int> { emitter ->
-            val cpl = object : ColorPickerListener
-            {
-                override fun onSliderPercentChanged(percent: Int)
-                {
-                    if (!emitter.isDisposed)
-                    {
-                        emitter.onNext(percent)
-                    }
-                }
-            }
         }
     }
 
@@ -119,17 +91,24 @@ class HomePresenter(private val hueSDK: PHHueSDK, private val sharedPrefs: Share
         connected = true
         view?.notifyBridgeConnected()
 
-        /*val light = phBridge.resourceCache.allLights[1]
-        val lightState = PHLightState()
-        val xy = PHUtilities.calculateXY(R.color.colorPrimary, light.modelNumber)
+        val groupLights: List<HueGroupInfo> = getAllGroupsWithLightStatus(phBridge)
+        view?.showLightGroups(groupLights)
+    }
 
-        lightState.isOn = true
-        lightState.x = xy[0]
-        lightState.y = xy[1]
+    private fun getAllGroupsWithLightStatus(phBridge: PHBridge): List<HueGroupInfo>
+    {
+        val lightsMap = hueSDK.selectedBridge.resourceCache.lights
 
-        phBridge.updateLightState(light, lightState)*/
-
-        view?.showLightGroups(phBridge.resourceCache.allGroups)
+        return phBridge.resourceCache.allGroups
+                .map { group ->
+                    HueGroupInfo(group, group.lightIdentifiers
+                            .map { id ->
+                                lightsMap[id]
+                            }
+                            .filter { item ->
+                                item?.lastKnownLightState?.isOn ?: false
+                            }.isNotEmpty())
+                }
     }
 
     override fun onCacheUpdated(p0: MutableList<Int>?, p1: PHBridge?)
@@ -152,13 +131,12 @@ class HomePresenter(private val hueSDK: PHHueSDK, private val sharedPrefs: Share
     {
     }
 
-    override fun onSliderChanged(group: GroupUpdateEvent)
+    override fun onSliderChanged(event: GroupUpdateEvent)
     {
-        val ratio = group.percent / 100f
-        val lightsMap = hueSDK.selectedBridge.resourceCache.lights
-        val groupLights: List<PHLight>? = group.group.lightIdentifiers.map { id -> lightsMap[id] }.filterNotNull()
+        val groupLights: List<PHLight> = getLightsForGroup(event.group)
 
-        groupLights?.forEachIndexed { i, phLight ->
+        val ratio = event.percent / 100f
+        groupLights.forEachIndexed { i, phLight ->
             val lightState = PHLightState()
             val newBrightness = (254 * ratio).toInt()
             lightState.brightness = newBrightness
@@ -166,5 +144,23 @@ class HomePresenter(private val hueSDK: PHHueSDK, private val sharedPrefs: Share
             hueSDK.selectedBridge.updateLightState(phLight, lightState)
         }
 
+    }
+
+    private fun getLightsForGroup(group: PHGroup): List<PHLight>
+    {
+        val lightsMap = hueSDK.selectedBridge.resourceCache.lights
+        val groupLights: List<PHLight> = group.lightIdentifiers.map { id -> lightsMap[id] }.filterNotNull()
+        return groupLights
+    }
+
+    override fun onGroupOnToggled(phGroup: PHGroup, on: Boolean)
+    {
+        // Need to check if turning the lights on to try and restore them to their previous brightness
+        val groupLights = getLightsForGroup(phGroup)
+        groupLights.forEach { light ->
+            val newState = PHLightState()
+            newState.isOn = on
+            hueSDK.selectedBridge.updateLightState(light, newState)
+        }
     }
 }

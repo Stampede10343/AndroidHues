@@ -65,11 +65,20 @@ class HomeActivity : BaseActivity(), HomeContract.View
         Snackbar.make(view_container, "Connected!", Snackbar.LENGTH_LONG).show()
     }
 
-    override fun showLightGroups(allGroups: List<PHGroup>)
+    override fun showLightGroups(allGroups: List<HueGroupInfo>)
     {
-        home_group_recyclerview.adapter = LightGroupAdapter(allGroups as MutableList<PHGroup>)
+        val groupAdapter = LightGroupAdapter(allGroups)
+        createSliderObservable(groupAdapter)
+        groupAdapter.groupOnListener = object : LightGroupAdapter.LightGroupOnListener
+        {
+            override fun onGroupOnToggled(phGroup: PHGroup, isOn: Boolean)
+            {
+                presenter.onGroupOnToggled(phGroup, isOn)
+            }
+        }
+
+        home_group_recyclerview.adapter = groupAdapter
         home_group_recyclerview.layoutManager = LinearLayoutManager(this)
-        createSliderObservable(home_group_recyclerview.adapter as LightGroupAdapter)
     }
 
     override fun showNoLightGroups()
@@ -81,7 +90,7 @@ class HomeActivity : BaseActivity(), HomeContract.View
     {
         subs.add(Observable.create(ObservableOnSubscribe<GroupUpdateEvent> { subscriber ->
             val updateEvent = GroupUpdateEvent()
-            adapter.sliderListener = object : LightGroupAdapter.SliderChangedListener
+            adapter.lightGroupSliderListener = object : LightGroupAdapter.LightGroupSliderListener
             {
                 override fun onSliderChanged(hueGroup: PHGroup, percent: Int)
                 {
