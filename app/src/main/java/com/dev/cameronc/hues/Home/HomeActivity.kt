@@ -77,8 +77,10 @@ class HomeActivity : BaseActivity(), HomeContract.View
             }
         }
 
-        home_group_recyclerview.adapter = groupAdapter
-        home_group_recyclerview.layoutManager = LinearLayoutManager(this)
+        home_group_recyclerview.post {
+            home_group_recyclerview.adapter = groupAdapter
+            home_group_recyclerview.layoutManager = LinearLayoutManager(this)
+        }
     }
 
     override fun showNoLightGroups()

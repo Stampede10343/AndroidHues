@@ -105,9 +105,7 @@ class HomePresenter(private val hueSDK: PHHueSDK, private val sharedPrefs: Share
                             .map { id ->
                                 lightsMap[id]
                             }
-                            .filter { item ->
-                                item?.lastKnownLightState?.isOn ?: false
-                            }.isNotEmpty())
+                            .first()!!.lastKnownLightState)
                 }
     }
 

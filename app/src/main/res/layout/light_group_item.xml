@@ -12,12 +12,13 @@
         android:layout_height="96dp">
 
         <ImageView
+            android:id="@+id/light_group_item_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
             android:src="@drawable/ic_lightbulb"
-            android:tint="@color/colorAccent"/>
+            android:tint="@android:color/darker_gray"/>
 
         <TextView
             android:id="@+id/light_group_item_name"
@@ -33,7 +34,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"
-            android:layout_marginEnd="16dp"/>
+            android:layout_marginEnd="8dp"
+            android:padding="8dp"/>
     </FrameLayout>
 
     <com.dev.cameronc.hues.ColorPicker.ColorPickerView
