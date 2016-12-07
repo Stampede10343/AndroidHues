@@ -18,8 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
         <activity android:name=".Connect.ConnectActivity"/>
+        <activity android:name=".LightGroup.LightGroupActivity"/>
     </application>
 
 </manifest>

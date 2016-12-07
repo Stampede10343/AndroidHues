@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import com.dev.cameronc.hues.Base.BaseActivity
 import com.dev.cameronc.hues.Connect.ConnectActivity
+import com.dev.cameronc.hues.LightGroup.LightGroupActivity
 import com.dev.cameronc.hues.R
 import com.philips.lighting.model.PHGroup
 import io.reactivex.Observable
@@ -65,9 +66,16 @@ class HomeActivity : BaseActivity(), HomeContract.View
         Snackbar.make(view_container, "Connected!", Snackbar.LENGTH_LONG).show()
     }
 
-    override fun showLightGroups(allGroups: List<HueGroupInfo>)
+    override fun showLightGroups(allGroups: List<LightGroupAdapter.HueGroupInfo>)
     {
-        val groupAdapter = LightGroupAdapter(allGroups)
+        val groupAdapter = LightGroupAdapter(allGroups, object : LightGroupAdapter.GroupClickedListener
+        {
+            override fun onGroupClicked(hueGroup: PHGroup)
+            {
+                presenter.onGroupClicked(hueGroup)
+            }
+        })
+
         createSliderObservable(groupAdapter)
         groupAdapter.groupOnListener = object : LightGroupAdapter.LightGroupOnListener
         {
@@ -103,6 +111,18 @@ class HomeActivity : BaseActivity(), HomeContract.View
             }
         }).debounce(20L, TimeUnit.MILLISECONDS).subscribe { ev -> presenter.onSliderChanged(ev) })
 
+    }
+
+    override fun navigateToGroupScreen(hueGroup: PHGroup)
+    {
+        val groupIntent = Intent(this, LightGroupActivity::class.java)
+        groupIntent.putExtra(IntentKeys.GroupKey, hueGroup.identifier)
+        startActivity(groupIntent)
+    }
+
+    companion object IntentKeys
+    {
+        val GroupKey: String = "groupId"
     }
 }
 

@@ -52,7 +52,7 @@ class HomePresenter(private val hueSDK: PHHueSDK, private val sharedPrefs: Share
             connected = true
             if (hueSDK.selectedBridge.resourceCache.allGroups.size > 0)
             {
-                val groupLights: List<HueGroupInfo> = getAllGroupsWithLightStatus(hueSDK.selectedBridge)
+                val groupLights: List<LightGroupAdapter.HueGroupInfo> = getAllGroupsWithLightStatus(hueSDK.selectedBridge)
                 view.showLightGroups(groupLights)
             }
             else
@@ -91,17 +91,17 @@ class HomePresenter(private val hueSDK: PHHueSDK, private val sharedPrefs: Share
         connected = true
         view?.notifyBridgeConnected()
 
-        val groupLights: List<HueGroupInfo> = getAllGroupsWithLightStatus(phBridge)
+        val groupLights: List<LightGroupAdapter.HueGroupInfo> = getAllGroupsWithLightStatus(phBridge)
         view?.showLightGroups(groupLights)
     }
 
-    private fun getAllGroupsWithLightStatus(phBridge: PHBridge): List<HueGroupInfo>
+    private fun getAllGroupsWithLightStatus(phBridge: PHBridge): List<LightGroupAdapter.HueGroupInfo>
     {
         val lightsMap = hueSDK.selectedBridge.resourceCache.lights
 
         return phBridge.resourceCache.allGroups
                 .map { group ->
-                    HueGroupInfo(group, group.lightIdentifiers
+                    LightGroupAdapter.HueGroupInfo(group, group.lightIdentifiers
                             .map { id ->
                                 lightsMap[id]
                             }
@@ -160,5 +160,10 @@ class HomePresenter(private val hueSDK: PHHueSDK, private val sharedPrefs: Share
             newState.isOn = on
             hueSDK.selectedBridge.updateLightState(light, newState)
         }
+    }
+
+    override fun onGroupClicked(hueGroup: PHGroup)
+    {
+        view?.navigateToGroupScreen(hueGroup)
     }
 }

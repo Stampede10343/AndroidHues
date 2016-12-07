@@ -9,6 +9,8 @@ import com.dev.cameronc.hues.Dagger.DaggerApplicationComponent
 import com.dev.cameronc.hues.Dagger.Home.HomeComponent
 import com.dev.cameronc.hues.Dagger.Home.HomeModule
 import com.dev.cameronc.hues.Dagger.HueModule
+import com.dev.cameronc.hues.Dagger.LightGroup.LightGroupComponent
+import com.dev.cameronc.hues.Dagger.LightGroup.LightGroupModule
 
 /**
  * Created by ccord on 11/9/2016.
@@ -19,6 +21,7 @@ class HuesApplication : Application()
     private var applicationComponent: ApplicationComponent? = null
     private var connectComponent: ConnectComponent? = null
     private var homeComponent: HomeComponent? = null
+    private var lightGroupComponent: LightGroupComponent? = null
 
     override fun onCreate()
     {
@@ -64,5 +67,20 @@ class HuesApplication : Application()
     fun releaseHomeComponent()
     {
         homeComponent = null
+    }
+
+    fun  getLightGroupComponent(): LightGroupComponent
+    {
+        if(lightGroupComponent == null)
+        {
+            lightGroupComponent = getApplicationComponent().plus(LightGroupModule())
+        }
+
+        return lightGroupComponent!!
+    }
+
+    fun releaseLightGroupComponent()
+    {
+        lightGroupComponent = null
     }
 }
