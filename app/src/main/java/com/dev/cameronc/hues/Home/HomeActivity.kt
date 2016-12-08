@@ -66,9 +66,9 @@ class HomeActivity : BaseActivity(), HomeContract.View
         Snackbar.make(view_container, "Connected!", Snackbar.LENGTH_LONG).show()
     }
 
-    override fun showLightGroups(allGroups: List<LightGroupAdapter.HueGroupInfo>)
+    override fun showLightGroups(allGroups: List<GroupAdapter.HueGroupInfo>)
     {
-        val groupAdapter = LightGroupAdapter(allGroups, object : LightGroupAdapter.GroupClickedListener
+        val groupAdapter = GroupAdapter(allGroups, object : GroupAdapter.GroupClickedListener
         {
             override fun onGroupClicked(hueGroup: PHGroup)
             {
@@ -77,7 +77,7 @@ class HomeActivity : BaseActivity(), HomeContract.View
         })
 
         createSliderObservable(groupAdapter)
-        groupAdapter.groupOnListener = object : LightGroupAdapter.LightGroupOnListener
+        groupAdapter.groupOnListener = object : GroupAdapter.LightGroupOnListener
         {
             override fun onGroupOnToggled(phGroup: PHGroup, isOn: Boolean)
             {
@@ -96,11 +96,11 @@ class HomeActivity : BaseActivity(), HomeContract.View
         Snackbar.make(view_container, "No light groups found :(", Snackbar.LENGTH_INDEFINITE).show()
     }
 
-    private fun createSliderObservable(adapter: LightGroupAdapter)
+    private fun createSliderObservable(adapter: GroupAdapter)
     {
         subs.add(Observable.create(ObservableOnSubscribe<GroupUpdateEvent> { subscriber ->
             val updateEvent = GroupUpdateEvent()
-            adapter.lightGroupSliderListener = object : LightGroupAdapter.LightGroupSliderListener
+            adapter.lightGroupSliderListener = object : GroupAdapter.LightGroupSliderListener
             {
                 override fun onSliderChanged(hueGroup: PHGroup, percent: Int)
                 {

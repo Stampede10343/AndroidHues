@@ -6,6 +6,7 @@ import dagger.Subcomponent
 /**
  * Created by ccord on 12/5/2016.
  */
+@LightGroupScope
 @Subcomponent(modules = arrayOf(LightGroupModule::class))
 interface LightGroupComponent
 {

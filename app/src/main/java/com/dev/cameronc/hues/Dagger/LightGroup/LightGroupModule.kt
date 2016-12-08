@@ -12,6 +12,7 @@ import dagger.Provides
 class LightGroupModule
 {
     @Provides
+    @LightGroupScope
     fun getPresenter(hueSDK: PHHueSDK): LightGroupPresenter
     {
         return LightGroupPresenter(hueSDK)

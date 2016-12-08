@@ -12,7 +12,7 @@ interface HomeContract
     {
         fun navigateToConnectScreen()
         fun notifyBridgeConnected()
-        fun showLightGroups(allGroups: List<LightGroupAdapter.HueGroupInfo>)
+        fun showLightGroups(allGroups: List<GroupAdapter.HueGroupInfo>)
         fun showNoLightGroups()
         fun navigateToGroupScreen(hueGroup: PHGroup)
     }

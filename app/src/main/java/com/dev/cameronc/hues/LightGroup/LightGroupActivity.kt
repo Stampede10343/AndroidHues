@@ -5,20 +5,24 @@ import android.support.v7.widget.LinearLayoutManager
 import com.dev.cameronc.hues.Base.BaseActivity
 import com.dev.cameronc.hues.Home.HomeActivity
 import com.dev.cameronc.hues.R
+import com.dev.cameronc.hues.getColor
 import com.philips.lighting.model.PHLight
 import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_light_group.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class LightGroupActivity : BaseActivity(), LightGroupContract.View
+class LightGroupActivity : BaseActivity(), LightGroupContract.View, LightColorPickerDialog.ColorPickerListener, LightColorPickerDialog.AttachListener
 {
     @Inject
     lateinit var presenter: LightGroupPresenter
     lateinit var groupId: String
     var subs = CompositeDisposable()
+    private var colorPickerDialog: LightColorPickerDialog? = null
+    private val PickerTag = "pickerTag"
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -40,6 +44,9 @@ class LightGroupActivity : BaseActivity(), LightGroupContract.View
         {
             groupId = savedInstanceState.getString(HomeActivity.GroupKey)
         }
+
+        colorPickerDialog = supportFragmentManager.findFragmentByTag(PickerTag) as? LightColorPickerDialog
+        colorPickerDialog?.setAttachListener(this)
     }
 
     override fun onResume()
@@ -79,6 +86,11 @@ class LightGroupActivity : BaseActivity(), LightGroupContract.View
                 {
                     presenter.onSwitchToggled(light, on)
                 }
+
+                override fun onLightClicked(lightItem: PHLight)
+                {
+                    presenter.onLightClicked(lightItem)
+                }
             })
 
             light_recyclerview.post {
@@ -108,6 +120,47 @@ class LightGroupActivity : BaseActivity(), LightGroupContract.View
                 }
             }
         }).debounce(20L, TimeUnit.MILLISECONDS).subscribe { ev -> presenter.onSliderChanged(ev) })
+    }
+
+    override fun showLightColorPicker(lightItem: PHLight)
+    {
+        val color = lightItem.getColor()
+        colorPickerDialog = LightColorPickerDialog.newInstance(color)
+        colorPickerDialog!!.setAttachListener(this)
+        colorPickerDialog!!.show(supportFragmentManager, PickerTag)
+    }
+
+    override fun onColorChanged(color: Int)
+    {
+        presenter.onLightColorChanged(color)
+    }
+
+    override fun onColorSelected(color: Int)
+    {
+        presenter.onLightColorSelected(color)
+    }
+
+    override fun onCancelPressed(initialColor: Int)
+    {
+        colorPickerDialog?.dismiss()
+        colorPickerDialog = null
+
+        presenter.onLightColorChanged(initialColor)
+    }
+
+    override fun onSetColorPressed(color: Int)
+    {
+        presenter.onLightColorSelected(color)
+    }
+
+    override fun onColorDialogAttached()
+    {
+        val colorChangedObservable = colorPickerDialog!!.colorChangedObservable().debounce(20L, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread()).publish()
+        presenter.colorChangeObservable(colorChangedObservable)
+        (light_recyclerview as LightRecyclerView).setLightColorObservable(colorChangedObservable, presenter.currentLight)
+        colorChangedObservable.connect()
+
+        colorPickerDialog!!.colorPickerListener = this
     }
 
     class LightUpdateEvent

@@ -19,7 +19,7 @@ import com.philips.lighting.model.PHLightState
 /**
  * Created by ccord on 11/20/2016.
  */
-class LightGroupAdapter(val groupList: List<HueGroupInfo>, val itemClickListener: GroupClickedListener) : RecyclerView.Adapter<LightGroupAdapter.LightGroupVH>()
+class GroupAdapter(val groupList: List<HueGroupInfo>, val itemClickListener: GroupClickedListener) : RecyclerView.Adapter<GroupAdapter.LightGroupVH>()
 {
     var lightGroupSliderListener: LightGroupSliderListener? = null
     var groupOnListener: LightGroupOnListener? = null

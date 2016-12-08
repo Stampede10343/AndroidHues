@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context="com.dev.cameronc.hues.LightGroup.LightGroupActivity">
 
-    <android.support.v7.widget.RecyclerView
+    <com.dev.cameronc.hues.LightGroup.LightRecyclerView
         android:id="@+id/light_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

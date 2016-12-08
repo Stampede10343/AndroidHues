@@ -1,11 +1,13 @@
 package com.dev.cameronc.hues.LightGroup
 
-import com.dev.cameronc.hues.Home.GroupUpdateEvent
 import com.dev.cameronc.hues.getGroupLights
+import com.dev.cameronc.hues.setColor
 import com.philips.lighting.hue.sdk.PHAccessPoint
 import com.philips.lighting.hue.sdk.PHHueSDK
 import com.philips.lighting.hue.sdk.PHSDKListener
 import com.philips.lighting.model.*
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 
 /**
  * Created by ccord on 12/5/2016.
@@ -21,6 +23,8 @@ class LightGroupPresenter(val hueSDK: PHHueSDK) : LightGroupContract.Presenter, 
         }
     var group: PHGroup? = null
     var lights: List<PHLight>? = null
+    internal var currentLight: PHLight? = null
+    var subscriptions = CompositeDisposable()
 
     init
     {
@@ -53,6 +57,7 @@ class LightGroupPresenter(val hueSDK: PHHueSDK) : LightGroupContract.Presenter, 
 
     override fun onViewDetached()
     {
+        subscriptions.clear()
         view = null
     }
 
@@ -68,6 +73,27 @@ class LightGroupPresenter(val hueSDK: PHHueSDK) : LightGroupContract.Presenter, 
         val newState = PHLightState()
         newState.isOn = on
         hueSDK.selectedBridge.updateLightState(light, newState)
+    }
+
+    override fun onLightClicked(lightItem: PHLight)
+    {
+        currentLight = lightItem
+        view?.showLightColorPicker(lightItem)
+    }
+
+    override fun onLightColorChanged(color: Int)
+    {
+        currentLight?.setColor(hueSDK.selectedBridge, color)
+    }
+
+    override fun onLightColorSelected(color: Int)
+    {
+        currentLight?.setColor(hueSDK.selectedBridge, color)
+    }
+
+    override fun colorChangeObservable(colorChanged: Observable<Int>)
+    {
+        subscriptions.add(colorChanged.subscribe { color -> currentLight?.setColor(hueSDK.selectedBridge, color) })
     }
 
     override fun onAccessPointsFound(p0: MutableList<PHAccessPoint>?)
