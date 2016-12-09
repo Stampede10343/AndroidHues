@@ -52,6 +52,7 @@ class LightAdapter(val lights: List<PHLight>, val lightInteractionListener: Ligh
     }
 
     override fun getItemCount(): Int = lights.size
+
     interface LightInteractionListener
     {
         fun onSwitchToggled(light: PHLight, on: Boolean)

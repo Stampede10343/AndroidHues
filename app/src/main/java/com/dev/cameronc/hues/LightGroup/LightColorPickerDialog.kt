@@ -18,6 +18,7 @@ class LightColorPickerDialog : DialogFragment()
     private lateinit var colorPicker: ColorPicker
     private lateinit var cancelButton: Button
     private lateinit var setColorButton: Button
+    private var attachListener: AttachListener? = null
     var colorPickerListener: ColorPickerListener? = null
         set(value)
         {
@@ -28,7 +29,6 @@ class LightColorPickerDialog : DialogFragment()
                 dismiss()
             }
         }
-    private var attachListener: AttachListener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {

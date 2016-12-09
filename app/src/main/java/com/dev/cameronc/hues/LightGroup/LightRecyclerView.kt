@@ -7,12 +7,15 @@ import android.util.AttributeSet
 import com.dev.cameronc.hues.Home.GroupAdapter
 import com.philips.lighting.model.PHLight
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 
 /**
  * Created by ccord on 12/7/2016.
  */
 class LightRecyclerView : RecyclerView
 {
+    val subscription = CompositeDisposable()
+
     constructor(context: Context) : super(context)
     {
     }
@@ -30,9 +33,15 @@ class LightRecyclerView : RecyclerView
             if (view != null)
             {
                 val lightGroupVH = getChildViewHolder(view) as GroupAdapter.LightGroupVH
-                colorChangedObservable.subscribe { color -> lightGroupVH.groupIcon.imageTintList = ColorStateList.valueOf(color) }
+                subscription.add(colorChangedObservable.subscribe { color -> lightGroupVH.groupIcon.imageTintList = ColorStateList.valueOf(color) })
             }
         }
+    }
+
+    override fun onDetachedFromWindow()
+    {
+        super.onDetachedFromWindow()
+        subscription.clear()
     }
 
     override fun getAdapter(): LightAdapter?

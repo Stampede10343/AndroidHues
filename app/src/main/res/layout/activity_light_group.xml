@@ -10,7 +10,6 @@
     <com.dev.cameronc.hues.LightGroup.LightRecyclerView
         android:id="@+id/light_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="8dp"/>
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

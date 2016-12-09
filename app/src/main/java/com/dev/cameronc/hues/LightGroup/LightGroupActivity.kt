@@ -23,6 +23,7 @@ class LightGroupActivity : BaseActivity(), LightGroupContract.View, LightColorPi
     var subs = CompositeDisposable()
     private var colorPickerDialog: LightColorPickerDialog? = null
     private val PickerTag = "pickerTag"
+    private lateinit var lightRecyclerview: LightRecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -32,6 +33,7 @@ class LightGroupActivity : BaseActivity(), LightGroupContract.View, LightColorPi
         restoreState(savedInstanceState)
 
         presenter.groupId = groupId
+        lightRecyclerview = findViewById(R.id.light_recyclerview) as LightRecyclerView
     }
 
     private fun restoreState(savedInstanceState: Bundle?)
@@ -146,6 +148,7 @@ class LightGroupActivity : BaseActivity(), LightGroupContract.View, LightColorPi
         colorPickerDialog = null
 
         presenter.onLightColorChanged(initialColor)
+        lightRecyclerview.setLightColorObservable(Observable.just(initialColor), presenter.currentLight)
     }
 
     override fun onSetColorPressed(color: Int)
@@ -157,7 +160,7 @@ class LightGroupActivity : BaseActivity(), LightGroupContract.View, LightColorPi
     {
         val colorChangedObservable = colorPickerDialog!!.colorChangedObservable().debounce(20L, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread()).publish()
         presenter.colorChangeObservable(colorChangedObservable)
-        (light_recyclerview as LightRecyclerView).setLightColorObservable(colorChangedObservable, presenter.currentLight)
+        lightRecyclerview.setLightColorObservable(colorChangedObservable, presenter.currentLight)
         colorChangedObservable.connect()
 
         colorPickerDialog!!.colorPickerListener = this
