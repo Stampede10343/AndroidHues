@@ -15,7 +15,7 @@ import io.reactivex.disposables.CompositeDisposable
  */
 class LightGroupPresenter(val hueSDK: PHHueSDK) : LightGroupContract.Presenter, PHSDKListener
 {
-    var view: LightGroupContract.View? = null
+    private var view: LightGroupContract.View? = null
     var groupId: String? = null
         set(value)
         {
