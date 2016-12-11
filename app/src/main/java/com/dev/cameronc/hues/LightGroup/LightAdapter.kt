@@ -1,12 +1,14 @@
 package com.dev.cameronc.hues.LightGroup
 
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.dev.cameronc.hues.Home.GroupAdapter
 import com.dev.cameronc.hues.HueUtils
 import com.dev.cameronc.hues.R
+import com.dev.cameronc.hues.getColor
 import com.philips.lighting.hue.sdk.utilities.PHUtilities
 import com.philips.lighting.model.PHLight
 
@@ -35,7 +37,7 @@ class LightAdapter(val lights: List<PHLight>, val lightInteractionListener: Ligh
         if (lightItem.lastKnownLightState.isOn)
         {
             val colorArray = HueUtils.createColorArray(lightItem.lastKnownLightState)
-            val color = PHUtilities.colorFromXY(colorArray, "model")
+            val color = PHUtilities.colorFromXY(colorArray, lightItem.modelNumber)
             holder.groupIcon.imageTintList = ColorStateList.valueOf(color)
 
             holder.brightnessSlider.post {
@@ -46,7 +48,20 @@ class LightAdapter(val lights: List<PHLight>, val lightInteractionListener: Ligh
         {
             holder.brightnessSlider.setSliderPosition(0f)
         }
-        holder.groupOnSwitch.setOnCheckedChangeListener { button, b -> lightInteractionListener.onSwitchToggled(lightItem, holder.groupOnSwitch.isChecked) }
+
+        holder.groupOnSwitch.setOnCheckedChangeListener { button, isOn ->
+            lightInteractionListener.onSwitchToggled(lightItem, isOn)
+            if(isOn)
+            {
+                holder.brightnessSlider.setSliderPosition(lightItem.lastKnownLightState.brightness / 254f)
+                holder.groupIcon.imageTintList = ColorStateList.valueOf(lightItem.getColor())
+            }
+            else
+            {
+                holder.brightnessSlider.setSliderPosition(0f)
+                holder.groupIcon.imageTintList = ColorStateList.valueOf(Color.GRAY)
+            }
+        }
 
         holder.itemView.setOnClickListener { lightInteractionListener.onLightClicked(lightItem) }
     }

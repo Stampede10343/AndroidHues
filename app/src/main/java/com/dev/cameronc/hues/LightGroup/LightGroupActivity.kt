@@ -147,8 +147,7 @@ class LightGroupActivity : BaseActivity(), LightGroupContract.View, LightColorPi
         colorPickerDialog?.dismiss()
         colorPickerDialog = null
 
-        presenter.onLightColorChanged(initialColor)
-        lightRecyclerview.setLightColorObservable(Observable.just(initialColor), presenter.currentLight)
+        presenter.onLightColorCanceled(initialColor)
     }
 
     override fun onSetColorPressed(color: Int)
@@ -164,6 +163,11 @@ class LightGroupActivity : BaseActivity(), LightGroupContract.View, LightColorPi
         colorChangedObservable.connect()
 
         colorPickerDialog!!.colorPickerListener = this
+    }
+
+    override fun updateListLightColor(colorObservable: Observable<Int>, currentLight: PHLight)
+    {
+        lightRecyclerview.setLightColorObservable(colorObservable, currentLight)
     }
 
     class LightUpdateEvent

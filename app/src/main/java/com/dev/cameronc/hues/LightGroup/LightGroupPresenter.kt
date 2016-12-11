@@ -1,5 +1,6 @@
 package com.dev.cameronc.hues.LightGroup
 
+import android.graphics.Color
 import com.dev.cameronc.hues.getGroupLights
 import com.dev.cameronc.hues.setColor
 import com.philips.lighting.hue.sdk.PHAccessPoint
@@ -89,11 +90,29 @@ class LightGroupPresenter(val hueSDK: PHHueSDK) : LightGroupContract.Presenter, 
     override fun onLightColorSelected(color: Int)
     {
         currentLight?.setColor(hueSDK.selectedBridge, color)
+        updateListLightColor(color)
     }
 
     override fun colorChangeObservable(colorChanged: Observable<Int>)
     {
         subscriptions.add(colorChanged.subscribe { color -> currentLight?.setColor(hueSDK.selectedBridge, color) })
+    }
+
+    override fun onLightColorCanceled(initialColor: Int)
+    {
+        updateListLightColor(initialColor)
+    }
+
+    private fun updateListLightColor(initialColor: Int)
+    {
+        if (currentLight!!.lastKnownLightState.isOn!!)
+        {
+            view?.updateListLightColor(Observable.just(initialColor), currentLight!!)
+        }
+        else
+        {
+            view?.updateListLightColor(Observable.just(Color.GRAY), currentLight!!)
+        }
     }
 
     override fun onAccessPointsFound(p0: MutableList<PHAccessPoint>?)

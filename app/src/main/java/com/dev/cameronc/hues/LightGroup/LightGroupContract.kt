@@ -12,6 +12,7 @@ interface LightGroupContract
     {
         fun showLights(lights: List<PHLight>?)
         fun showLightColorPicker(lightItem: PHLight)
+        fun updateListLightColor(colorObservable: Observable<Int>, currentLight: PHLight)
     }
 
     interface Presenter : com.dev.cameronc.hues.Base.Presenter<View>
@@ -22,5 +23,6 @@ interface LightGroupContract
         fun onLightColorChanged(color: Int)
         fun onLightColorSelected(color: Int)
         fun colorChangeObservable(colorChanged: Observable<Int>)
+        fun onLightColorCanceled(initialColor: Int)
     }
 }
