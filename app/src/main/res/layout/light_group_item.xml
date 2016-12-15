@@ -38,9 +38,10 @@
             android:padding="8dp"/>
     </FrameLayout>
 
-    <com.dev.cameronc.hues.ColorPicker.ColorPickerView
+    <com.dev.cameronc.hues.ColorPicker.SliderView
         android:id="@+id/light_group_item_slider"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:background="@color/cardview_dark_background"/>
 
 </LinearLayout>

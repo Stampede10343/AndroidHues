@@ -76,7 +76,8 @@ class HomeActivity : BaseActivity(), HomeContract.View
             }
         })
 
-        createSliderObservable(groupAdapter)
+        view_container.postDelayed({ createSliderObservable(groupAdapter) }, 100)
+
         groupAdapter.groupOnListener = object : GroupAdapter.LightGroupOnListener
         {
             override fun onGroupOnToggled(phGroup: PHGroup, isOn: Boolean)

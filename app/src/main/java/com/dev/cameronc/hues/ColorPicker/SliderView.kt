@@ -5,9 +5,11 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color.*
+import android.graphics.Color.argb
 import android.graphics.Paint
 import android.graphics.RectF
+import android.os.Parcel
+import android.os.Parcelable
 import android.support.annotation.FloatRange
 import android.support.annotation.StyleRes
 import android.util.AttributeSet
@@ -20,7 +22,7 @@ import java.util.*
 /**
  * Created by ccord on 11/21/2016.
  */
-class ColorPickerView : View
+class SliderView : View
 {
     private val defaultHeight: Int
     private var sliderHeight: Float = 0f
@@ -87,7 +89,7 @@ class ColorPickerView : View
         super.onSizeChanged(w, h, oldw, oldh)
         sliderHeight = h.toFloat()
 
-        sliderBarWidth = (w / 10f).toInt()
+        sliderBarWidth = (h * 1.25).toInt()
     }
 
     override fun onDraw(canvas: Canvas)
@@ -127,36 +129,6 @@ class ColorPickerView : View
     {
         canvas.drawRect(start, 0f, end, sliderHeight, sliderBarPaint)
     }
-
-    private fun mixColor(@FloatRange(from = 0.0, to = 1.0) sliderRatio: Float, colorArray: IntArray): Int
-    {
-        if (sliderRatio <= 0)
-        {
-            return colorArray.first()
-        }
-        else if (sliderRatio >= 1)
-        {
-            return colorArray.last()
-        }
-
-        var colorWeight = sliderRatio * (colorArray.size - 1)
-        val startIndex = colorWeight.toInt()
-        // Remove whole part of decimal
-        colorWeight -= startIndex
-
-        val startColor = colorArray[startIndex]
-        val endColor = colorArray[startIndex + 1]
-
-        val r = avg(red(startColor), red(endColor), colorWeight)
-        val g = avg(green(startColor), green(endColor), colorWeight)
-        val b = avg(blue(startColor), blue(endColor), colorWeight)
-
-        return rgb(r, g, b)
-    }
-
-
-    private fun avg(start: Int, end: Int, @FloatRange(from = 0.0, to = 1.0) weight: Float)
-            = start + Math.round(weight * (end - start))
 
     override fun onTouchEvent(event: MotionEvent): Boolean
     {
@@ -227,6 +199,60 @@ class ColorPickerView : View
         }
         animator.start()
 
+    }
+
+    override fun onSaveInstanceState(): Parcelable
+    {
+        val viewState = SliderViewState(super.onSaveInstanceState())
+        viewState.sliderPosition = sliderBarCenterX
+        return viewState
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?)
+    {
+        super.onRestoreInstanceState(state)
+        sliderBarCenterX = (state as SliderViewState).sliderPosition
+    }
+
+    class SliderViewState : BaseSavedState
+    {
+        var sliderPosition: Int = 0
+
+        constructor(parcelable: Parcelable) : super(parcelable)
+        constructor(parcel: Parcel) : super(parcel)
+        {
+            sliderPosition = parcel.readInt()
+        }
+
+        override fun writeToParcel(out: Parcel, flags: Int)
+        {
+            super.writeToParcel(out, flags)
+            out.writeInt(sliderPosition)
+        }
+
+        companion object SliderCreator
+        {
+            @JvmField val CREATOR: Parcelable.Creator<SliderViewState> = object : Parcelable.Creator<SliderViewState>
+            {
+                override fun newArray(size: Int): Array<SliderViewState?>
+                {
+                    return arrayOfNulls(size)
+                }
+
+                override fun createFromParcel(source: Parcel): SliderViewState
+                {
+                    return SliderViewState(source)
+                }
+            }
+        }
+    }
+
+    fun setSliderPositionNoAnimation(ratio: Float)
+    {
+        post {
+            sliderBarCenterX = (width * ratio).toInt()
+            invalidate()
+        }
     }
 }
 

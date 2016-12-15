@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
-import com.dev.cameronc.hues.ColorPicker.ColorPickerView
+import com.dev.cameronc.hues.ColorPicker.SliderView
 import com.dev.cameronc.hues.HueUtils
 import com.dev.cameronc.hues.R
 import com.philips.lighting.hue.sdk.utilities.PHUtilities
@@ -76,14 +76,14 @@ class GroupAdapter(val groupList: List<HueGroupInfo>, val itemClickListener: Gro
     {
         val groupIcon: ImageView
         val groupNameTextView: TextView
-        val brightnessSlider: ColorPickerView
+        val brightnessSlider: SliderView
         val groupOnSwitch: Switch
 
         init
         {
             groupIcon = view.findViewById(R.id.light_group_item_icon) as ImageView
             groupNameTextView = view.findViewById(R.id.light_group_item_name) as TextView
-            brightnessSlider = view.findViewById(R.id.light_group_item_slider) as ColorPickerView
+            brightnessSlider = view.findViewById(R.id.light_group_item_slider) as SliderView
             groupOnSwitch = view.findViewById(R.id.light_group_item_switch) as Switch
         }
     }
