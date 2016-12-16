@@ -173,13 +173,49 @@ class HomePresenterTest
     @Test
     fun onSliderChanged()
     {
+        val mockBridge = mock(PHBridge::class.java)
+        `when`(hueSdk.selectedBridge).thenReturn(mockBridge)
+        `when`(hueSdk.selectedBridge.resourceCache).thenReturn(mock(PHBridgeResourcesCache::class.java))
+        val light = mock(PHLight::class.java)
+        `when`(light.lastKnownLightState).thenReturn(PHLightState())
+        `when`(light.identifier).thenReturn("id")
+        `when`(hueSdk.selectedBridge.resourceCache.lights).thenReturn(mapOf(Pair("id", light)))
 
+        homePresenter.onViewAttached(view)
+
+        val event = GroupUpdateEvent()
+        val group = mock(PHGroup::class.java)
+        `when`(group.lightIdentifiers).thenReturn(listOf("id"))
+        event.group = group
+        event.percent = 50
+
+        homePresenter.onSliderChanged(event)
+
+        verify(hueSdk.selectedBridge, Mockito.times(1)).updateLightState(eq(light), Matchers.any())
     }
 
     @Test
     fun onGroupOnToggled()
     {
+        val mockBridge = mock(PHBridge::class.java)
+        `when`(hueSdk.selectedBridge).thenReturn(mockBridge)
+        `when`(hueSdk.selectedBridge.resourceCache).thenReturn(mock(PHBridgeResourcesCache::class.java))
+        val light = mock(PHLight::class.java)
+        `when`(light.lastKnownLightState).thenReturn(PHLightState())
+        `when`(light.identifier).thenReturn("id")
+        `when`(hueSdk.selectedBridge.resourceCache.lights).thenReturn(mapOf(Pair("id", light)))
 
+        homePresenter.onViewAttached(view)
+
+        val event = GroupUpdateEvent()
+        val group = mock(PHGroup::class.java)
+        `when`(group.lightIdentifiers).thenReturn(listOf("id"))
+        event.group = group
+        event.percent = 50
+
+        homePresenter.onGroupOnToggled(group, true)
+
+        verify(hueSdk.selectedBridge, Mockito.times(1)).updateLightState(Matchers.any(), Matchers.any())
     }
 
     @Test

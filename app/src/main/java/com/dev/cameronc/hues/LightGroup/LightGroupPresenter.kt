@@ -139,7 +139,7 @@ class LightGroupPresenter(val hueSDK: PHHueSDK) : LightGroupContract.Presenter, 
     {
     }
 
-    override fun onError(p0: Int, p1: String?)
+    override fun onError(errorCode: Int, errorMessage: String?)
     {
     }
 
