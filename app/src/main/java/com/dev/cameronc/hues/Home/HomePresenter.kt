@@ -162,6 +162,11 @@ class HomePresenter(private val hueSDK: PHHueSDK, private val sharedPrefs: Share
         }
     }
 
+    override fun onSettingsPressed()
+    {
+        view?.navigateToSettingsScreen()
+    }
+
     override fun onGroupClicked(hueGroup: PHGroup)
     {
         view?.navigateToGroupScreen(hueGroup)

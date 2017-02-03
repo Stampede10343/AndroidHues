@@ -5,9 +5,12 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import com.dev.cameronc.hues.Base.BaseActivity
 import com.dev.cameronc.hues.Connect.ConnectActivity
 import com.dev.cameronc.hues.LightGroup.LightGroupActivity
+import com.dev.cameronc.hues.Preferences.SettingsActivity
 import com.dev.cameronc.hues.R
 import com.philips.lighting.model.PHGroup
 import io.reactivex.Observable
@@ -52,6 +55,21 @@ class HomeActivity : BaseActivity(), HomeContract.View
             presenter.onPresenterDestroyed()
             app.releaseHomeComponent()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean
+    {
+        menuInflater.inflate(R.menu.menu_home, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean
+    {
+        when (item.itemId)
+        {
+            R.id.action_settings -> presenter.onSettingsPressed()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun navigateToConnectScreen()
@@ -121,13 +139,20 @@ class HomeActivity : BaseActivity(), HomeContract.View
         startActivity(groupIntent)
     }
 
+    override fun navigateToSettingsScreen()
+    {
+        val settingsIntent = Intent(this, SettingsActivity::class.java)
+        startActivity(settingsIntent)
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+    }
+
     companion object IntentKeys
     {
         val GroupKey: String = "groupId"
     }
 }
 
-class GroupUpdateEvent()
+class GroupUpdateEvent
 {
     var group: PHGroup = PHGroup()
     var percent = 0

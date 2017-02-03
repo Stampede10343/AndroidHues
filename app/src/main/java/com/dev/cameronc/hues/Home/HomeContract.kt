@@ -15,6 +15,7 @@ interface HomeContract
         fun showLightGroups(allGroups: List<GroupAdapter.HueGroupInfo>)
         fun showNoLightGroups()
         fun navigateToGroupScreen(hueGroup: PHGroup)
+        fun navigateToSettingsScreen()
     }
 
     interface Presenter : com.dev.cameronc.hues.Base.Presenter<View>
@@ -23,5 +24,6 @@ interface HomeContract
         fun onSliderChanged(event: GroupUpdateEvent)
         fun onGroupOnToggled(phGroup: PHGroup, on: Boolean)
         fun onGroupClicked(hueGroup: PHGroup)
+        fun onSettingsPressed()
     }
 }

@@ -5,7 +5,7 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color.argb
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.os.Parcel
@@ -13,9 +13,11 @@ import android.os.Parcelable
 import android.support.annotation.FloatRange
 import android.support.annotation.StyleRes
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import com.dev.cameronc.hues.R
 import com.dev.cameronc.hues.dpToPx
 import java.util.*
 
@@ -48,8 +50,14 @@ class SliderView : View
         sliderBarPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             style = Paint.Style.FILL
             strokeWidth = sliderBarWidth / 2f
-            color = argb(120, 255, 255, 255)
+            color = Color.argb(120, 100, 100, 100)
         }
+
+        val backgroundVal = TypedValue()
+        context.theme.resolveAttribute(R.attr.background, backgroundVal, true)
+        val backgroundColor = backgroundVal.data
+
+        //setBackgroundColor(backgroundColor)
 
     }
 
