@@ -14,9 +14,11 @@ import android.support.annotation.FloatRange
 import android.support.annotation.StyleRes
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import android.widget.OverScroller
 import com.dev.cameronc.hues.R
 import com.dev.cameronc.hues.dpToPx
 import java.util.*
@@ -24,17 +26,20 @@ import java.util.*
 /**
  * Created by ccord on 11/21/2016.
  */
-class SliderView : View
+class SliderView : View, GestureDetector.OnGestureListener
 {
-    private val defaultHeight: Int
+    private val defaultHeight: Int = dpToPx(32)
     private var sliderHeight: Float = 0f
     private var sliderBarWidth: Int = 0
 
     private val sliderBarPaint: Paint
     private var sliderBarCenterX: Int = 0
 
-    private var xRatio: Float = 0f
     private var displayText: Boolean = false
+
+    private val gestureDetector: GestureDetector
+    private val scroller: OverScroller
+    private var catchupAnimator: ValueAnimator? = null
 
     private val sliderChangeListeners: MutableList<(Int) -> Unit> = ArrayList()
 
@@ -45,7 +50,6 @@ class SliderView : View
 
     init
     {
-        defaultHeight = dpToPx(32)
 
         sliderBarPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             style = Paint.Style.FILL
@@ -56,6 +60,9 @@ class SliderView : View
         val backgroundVal = TypedValue()
         context.theme.resolveAttribute(R.attr.background, backgroundVal, true)
         val backgroundColor = backgroundVal.data
+
+        gestureDetector = GestureDetector(context, this)
+        scroller = OverScroller(context)
 
         //setBackgroundColor(backgroundColor)
 
@@ -107,6 +114,7 @@ class SliderView : View
 
     private fun drawSliderBar(canvas: Canvas)
     {
+
         if (sliderBarOffStartScreen())
         {
             drawSliderBarRect(canvas, 0f, sliderBarWidth.toFloat())
@@ -121,6 +129,13 @@ class SliderView : View
         {
             drawSliderBarRect(canvas, sliderBarCenterX - sliderBarWidth / 2f, sliderBarCenterX + sliderBarWidth / 2f)
             notifySliderChangeListeners(sliderRelativePosition())
+        }
+
+        if (!scroller.isFinished)
+        {
+            scroller.computeScrollOffset()
+            sliderBarCenterX = scroller.currX
+            postInvalidate()
         }
     }
 
@@ -140,22 +155,7 @@ class SliderView : View
 
     override fun onTouchEvent(event: MotionEvent): Boolean
     {
-        val action = event.action
-        if (action == MotionEvent.ACTION_MOVE || action == MotionEvent.ACTION_DOWN)
-        {
-
-            xRatio = event.x / width
-            displayText = true
-            sliderBarCenterX = event.x.toInt()
-        }
-        else if (action == MotionEvent.ACTION_UP)
-        {
-            displayText = false
-        }
-
-        postInvalidateOnAnimation()
-
-        return true
+        return gestureDetector.onTouchEvent(event)
     }
 
     fun addSliderChangeListener(sliderListener: (Int) -> Unit)
@@ -207,6 +207,60 @@ class SliderView : View
         }
         animator.start()
 
+    }
+
+    override fun onShowPress(e: MotionEvent)
+    {
+    }
+
+    override fun onSingleTapUp(e: MotionEvent): Boolean
+    {
+        return false
+    }
+
+    override fun onDown(e: MotionEvent): Boolean
+    {
+        scroller.forceFinished(false)
+        catchupAnimator = ValueAnimator.ofInt(sliderBarCenterX, e.x.toInt())
+        catchupAnimator!!.interpolator = DecelerateInterpolator()
+        catchupAnimator!!.duration = 100
+        catchupAnimator!!.addUpdateListener { pos ->
+            sliderBarCenterX = pos.animatedValue as Int
+            invalidate()
+        }
+        catchupAnimator!!.start()
+
+        return true
+    }
+
+    override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean
+    {
+        catchupAnimator?.cancel()
+        scroller.fling(e2.x.toInt(), 0, (velocityX / 2).toInt(), 0, 0, width, 0, 0)
+        postInvalidate()
+        return true
+    }
+
+    override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean
+    {
+        if (catchupAnimator?.isRunning ?: false)
+        {
+            catchupAnimator?.end()
+            sliderBarCenterX -= distanceX.toInt()
+            invalidate()
+        }
+        else
+        {
+            scroller.forceFinished(true)
+            sliderBarCenterX -= distanceX.toInt()
+            invalidate()
+        }
+
+        return true
+    }
+
+    override fun onLongPress(e: MotionEvent?)
+    {
     }
 
     override fun onSaveInstanceState(): Parcelable
