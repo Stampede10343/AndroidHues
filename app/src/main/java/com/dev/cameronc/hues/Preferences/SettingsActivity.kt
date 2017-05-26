@@ -26,8 +26,8 @@ class SettingsActivity : BaseActivity()
         setContentView(R.layout.activity_settings)
 
         val preferenceList = ArrayList<Preference>()
-        preferenceList.add(Preference("Reset bridge", "Reset the bridge to configure it again from scratch"))
-        preferenceList.add(Preference("Theme", "Select either dark theme or light theme"))
+        preferenceList.add(Preference(getString(R.string.reset_bridge), getString(R.string.reset_bridge_detail)))
+        preferenceList.add(Preference(getString(R.string.theme), getString(R.string.dark_or_light_theme)))
 
         preference_listview.adapter = SettingsListAdapter(preferenceList)
         preference_listview.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
@@ -49,10 +49,10 @@ class SettingsActivity : BaseActivity()
 
     private fun promptToResetBridge()
     {
-        AlertDialog.Builder(this).setTitle("Forget Hue Bridge")
-                .setMessage("Forgetting the bridge will will make it so you have to setup to app to reconnect to the bridge")
-                .setPositiveButton("Confirm", { dialog, which -> forgetBridge() })
-                .setNegativeButton("Cancel", null)
+        AlertDialog.Builder(this).setTitle(R.string.forget_hue_bridge)
+                .setMessage(getString(R.string.forget_hue_bridge_warning))
+                .setPositiveButton(android.R.string.ok, { dialog, which -> forgetBridge() })
+                .setNegativeButton(android.R.string.cancel, null)
                 .show()
     }
 
@@ -67,9 +67,9 @@ class SettingsActivity : BaseActivity()
 
     private fun selectTheme()
     {
-        val themes = arrayOf("Dark", "Light")
+        val themes = arrayOf(getString(R.string.dark_theme), getString(R.string.light_theme))
         AlertDialog.Builder(this)
-                .setTitle("Select Theme")
+                .setTitle(getString(R.string.select_theme))
                 .setAdapter(ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, themes), { dialog, index -> onThemeClicked(index)})
                 .show()
     }

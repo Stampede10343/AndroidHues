@@ -81,7 +81,7 @@ class HomeActivity : BaseActivity(), HomeContract.View
 
     override fun notifyBridgeConnected()
     {
-        Snackbar.make(view_container, "Connected!", Snackbar.LENGTH_LONG).show()
+        Snackbar.make(view_container,  R.string.connected,Snackbar.LENGTH_LONG).show()
     }
 
     override fun showLightGroups(allGroups: List<GroupAdapter.HueGroupInfo>)
@@ -112,7 +112,7 @@ class HomeActivity : BaseActivity(), HomeContract.View
 
     override fun showNoLightGroups()
     {
-        Snackbar.make(view_container, "No light groups found :(", Snackbar.LENGTH_INDEFINITE).show()
+        Snackbar.make(view_container, R.string.no_light_groups_found, Snackbar.LENGTH_INDEFINITE).show()
     }
 
     private fun createSliderObservable(adapter: GroupAdapter)
