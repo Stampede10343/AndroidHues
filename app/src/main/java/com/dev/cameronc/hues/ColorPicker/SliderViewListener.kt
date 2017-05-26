@@ -5,7 +5,7 @@ import android.support.annotation.IntRange
 /**
  * Created by ccord on 11/26/2016.
  */
-interface ColorPickerListener
+interface SliderViewListener
 {
     fun onSliderPercentChanged(@IntRange(from = 0, to = 100) percent: Int)
 }
