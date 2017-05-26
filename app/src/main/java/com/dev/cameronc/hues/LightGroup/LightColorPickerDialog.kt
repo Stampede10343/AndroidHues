@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import com.dev.cameronc.hues.R
 import com.larswerkman.holocolorpicker.ColorPicker
+import com.larswerkman.holocolorpicker.OpacityBar
+import com.larswerkman.holocolorpicker.SaturationBar
 import io.reactivex.Observable
 
 /**
@@ -34,6 +36,7 @@ class LightColorPickerDialog : DialogFragment()
     {
         val view = inflater.inflate(R.layout.color_picker_dialog, container, false)
         colorPicker = view.findViewById(R.id.dialog_color_picker) as ColorPicker
+        colorPicker.addSaturationBar(view.findViewById(R.id.dialog_sat_bar) as SaturationBar)
         cancelButton = view.findViewById(R.id.color_picker_dialog_cancel) as Button
         setColorButton = view.findViewById(R.id.color_picker_dialog_set) as Button
 
