@@ -134,7 +134,7 @@ class HomePresenter(private val hueSDK: PHHueSDK, private val sharedPrefs: Share
         val groupLights: List<PHLight> = getLightsForGroup(event.group)
 
         val ratio = event.percent / 100f
-        groupLights.forEachIndexed { i, phLight ->
+        groupLights.forEach { phLight ->
             val lightState = PHLightState()
             val newBrightness = (254 * ratio).toInt()
             lightState.brightness = newBrightness
