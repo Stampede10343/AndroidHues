@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import com.dev.cameronc.hues.R
 import com.larswerkman.holocolorpicker.ColorPicker
-import com.larswerkman.holocolorpicker.OpacityBar
 import com.larswerkman.holocolorpicker.SaturationBar
 import io.reactivex.Observable
 
