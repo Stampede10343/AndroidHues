@@ -1,5 +1,6 @@
 package com.dev.cameronc.hues.Preferences
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
@@ -17,6 +18,7 @@ class SettingsActivity : BaseActivity()
     @Inject
     lateinit var preferences: SharedPrefs
     private var bridgeForgotten = false
+    private var themeChanged = false
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -39,12 +41,14 @@ class SettingsActivity : BaseActivity()
         }
 
         bridgeForgotten = savedInstanceState?.getBoolean(BRIDGE_FORGOTTEN) ?: false
+        themeChanged = savedInstanceState?.getBoolean(THEME_CHANGED) ?: false
     }
 
     override fun onSaveInstanceState(outState: Bundle)
     {
         super.onSaveInstanceState(outState)
         outState.putBoolean(BRIDGE_FORGOTTEN, bridgeForgotten)
+        outState.putBoolean(THEME_CHANGED, themeChanged)
     }
 
     private fun promptToResetBridge()
@@ -83,6 +87,7 @@ class SettingsActivity : BaseActivity()
         }
 
         recreate()
+        themeChanged = true
     }
 
     override fun onBackPressed()
@@ -100,8 +105,19 @@ class SettingsActivity : BaseActivity()
         }
     }
 
+    override fun finish()
+    {
+        if(themeChanged)
+        {
+            setResult(Activity.RESULT_OK)
+        }
+
+        super.finish()
+    }
+
     companion object
     {
         val BRIDGE_FORGOTTEN = "bridgeForgotten"
+        val THEME_CHANGED = "themeChanged"
     }
 }

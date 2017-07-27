@@ -1,5 +1,6 @@
 package com.dev.cameronc.hues.Home
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -54,6 +55,15 @@ class HomeActivity : BaseActivity(), HomeContract.View
             Log.i(javaClass.name, "Home component released")
             presenter.onPresenterDestroyed()
             app.releaseHomeComponent()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
+    {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == 0 && resultCode == Activity.RESULT_OK)
+        {
+            recreate()
         }
     }
 
@@ -142,7 +152,7 @@ class HomeActivity : BaseActivity(), HomeContract.View
     override fun navigateToSettingsScreen()
     {
         val settingsIntent = Intent(this, SettingsActivity::class.java)
-        startActivity(settingsIntent)
+        startActivityForResult(settingsIntent, 0)
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
     }
 
